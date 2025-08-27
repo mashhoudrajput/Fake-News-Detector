@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fake News Detector</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .fake {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .real {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center mb-4">
+        <h1>📰 Fake News Detector</h1>
+        <p>Paste an article or news text below and check if it's <strong>Fake</strong> or <strong>Real</strong></p>
+    </div>
+
+    <form method="post" action="{{ url_for('predict') }}">
+        <textarea name="news" placeholder="Paste news/article text here...">{{ text if text else '' }}</textarea>
+        <br><br>
+        <button type="submit" class="btn btn-primary">Check</button>
+    </form>
+
+    {% if warning %}
+    <div class="alert alert-warning mt-3">{{ warning }}</div>
+    {% endif %}
+
+    {% if prediction %}
+    <div class="result {% if prediction == 'Fake' %}fake{% elif prediction == 'Real' %}real{% endif %}">
+        <h4>Prediction: {{ prediction }}</h4>
+
+        {% if prob_fake is not none and prob_real is not none %}
+            <p><strong>Confidence:</strong></p>
+            <p>Fake: {{ prob_fake }}%</p>
+            <div class="progress mb-2">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ prob_fake }}%"></div>
+            </div>
+            <p>Real: {{ prob_real }}%</p>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ prob_real }}%"></div>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>
+
